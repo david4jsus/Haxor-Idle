@@ -1,0 +1,244 @@
+////////////////////
+//// HAXOR IDLE ////
+////////////////////
+
+- Genre: Idle/Inremental + Tower Defense
+- Platform: Web Browser
+- Engine: HTML5 (Custom)
+
+==========
+
+- You are a hacker, employee of a business whose entire network you want to shut down because they did something bad, so you're going through the network looking for data to gain access to the security level 0 to where you'll find access to a backdoor and insert a virus.
+
+==========
+
+- General level design concepts
+   - Each level is a sub-network (tower defense type level)
+   - Each sub-network is a node of a larger network (business network)
+   - Eventually the player gains access to the highest level network (last level)
+
+- Incremental upgrades
+   - Multiplier (More computers receiving data packets at a time)
+   - Bandwidth (More servers allow more networks)
+   - Speed (Better equipment but player can control speed)
+   - Overall tower upgrades (?)
+      - Number of towers per level
+
+- Towers
+   - Drop tower: Drop data (deletes any type of data)
+   - Antidef tower: Drop defense data (deletes only defense programs)
+   - Antivirus tower: Isolates viruses (depleting its hp, only affects viruses)
+   - Swicth: Allows traffic in intervals, affects all types of data
+   - Dump buffer: Delete traffic that falls in a buffer over time, affects all types of data
+   - Redirect traffic: Rreroute traffic to fake addresses (?)
+
+- Types of data
+   - Normal
+      - Useful to hacker
+      - Currency, main resource
+   - Defense programs
+      - Decreases currency
+   - Virus
+      - Decreases healthpoints of towers
+      - Different types of viruses?
+         - Divide into defense programs when killed
+         - Divide into more viruses when killed
+         - Suicide viruses (kill/damage tower when killed)
+
+- Levels of data packets
+   - Small
+      - Packets contain 1 bit
+   - Medium
+      - Packets contain 25 bits
+   - Large
+      - Packets contain 100 bits
+   - Industrial
+      - Packets contain 250 bits
+
+- TD map design
+   - Grid based (16 x 12 tiles)
+   - Different levels spawn types of data with different probabilities
+   - Towers can only be placed in allowed tiles, specified per level
+   - Clicking on a bit, tower or other entity in the map should display information about that entity
+
+==========
+||TODO||
+
+   - Game design will be continuous (will probably be designing until the game is almost fully developed)
+   - Research inheritance
+   - Research modules
+   - Figure out how to save
+      - Local storage
+      - Is there a better way?
+   - Config file t load default values for things I don't want to have to look for in order to change every time I test the game
+      - Include definitions for packet size variables, packet speed, etc
+   - Map editor (?)
+
+==========
+||NOTES||
+
+- Figure out what the goals for the player should be and provide the tools to achieve these goals
+   - Main goal
+      - Hack the planet! (Gain a required amount of data to gain access to the ultimate network)
+   - Secondary goals
+      - Create security systems that will produce income in a sub-network (do good on each TD level)
+      - Unlock more sub-networks (gain required amount of data to DoS/DDoS the sub-network and gain entry)
+         - Higher unlocks might require specific upgrades or techniques? --> Levels of security
+
+- New Game+?
+   - Option to restart at any moment with all current upgrades?
+
+- TD mechanics should be introduced incrementally to promote discovery as player progresses in the game
+   - Also great for tutorializing
+
+- Resource management?
+
+- Achievments?
+
+- dailydot.com/debug/hacking-security-glossary-adware-bot-doxing/
+
+- 3 levels of security for each node in the network, final level is level 3
+   - Level 1: DoS to access
+   - Level 2: DDoS to access (need a required amount of servers)
+   - Level 3: (?)
+
+- When unlocking new sub-networks
+   - Click on "Gain Access" to start the process
+   - DoS/DDoS activates
+   - Sub-net restarts
+   - Run stealth scan
+      - Running ACK scan...
+      - Running FIN scan...
+      - Running NULL scan...
+      - Running XMAS scan...
+
+- Develop topology as we figure out how to present each new mechanic in the game and design level layouts
+
+- Have a percentage bar on each node in the topography to indicate progression of each node in receiving enough data to unlock next phase
+   - Visually indicate when a node in the topography is complete (enough bits from that level)
+
+==========
+||Objects||
+
+- Public variable
+- [Private variable]
+- {Function}
+
+- Game manager (Singleton)
+   - Idle manager: Reference to an instance of an idle manager
+   - State: Could be "paused", "menu", "level" (?)
+   - {Tick}: Run through the logic of the game and call for logic of other objects
+   - {Draw}: Display relevant images on the screen
+   - {Save}: Save the current state of the game
+   - {Load}: Load the current state of the game
+
+- Data packet
+   - Type: Could be "normal", "defense", "virus"
+   - Size: Could be "small", "medium", "large", "industrial"
+   - Path: List of position nodes that this packet will traverse through
+   - Current path target: Current path node that this packet is headed towards
+   - [Position]: Current position of this packet
+   - [Sprite]: Image to be drawn for this packet
+   - [Speed]: Speed at which this packet travels (?)
+   - {Move}: Move this packet through the path
+   - {Infect}: If this packet is a virus, infect a tower
+
+- Level
+   - Name: Name of this level (?)
+   - Bit goal: Number of earned bits required to complete this level
+   - Bits: Number of bits earned from this level
+   - Paths: List of paths that data packets will traverse through
+   - Spawner positions: List of position nodes for spawners to spawn data packets from
+   - Goal positions: List of position nodes where data packets are processed once they end their path
+   - Tile map: Array of tile information of the level grid
+   - Entities: List of entities currently existing in this level
+   - {Spawn}: Use the spawners to create new data packets in this level
+   - {Check goal}: Process any data packets that may have reached the goal in this level
+   - {Place tower}: Place a tower in this level
+
+- Spawner
+   - Position: Position node at which data packets are created
+   - Probabilities: Array of probabilities of spawning each type/size of data packet
+   - {Spawn}: Create a new data packet
+
+- Tile
+   - Type: Could be "background", "path", "tower_placeable"
+   - Container: The object it containes, could be "empty", "packet", "tower" (?)
+   - Health: Number of hitpoints left for this tower
+   - Max health: Maximum number of hitpoints for this tower
+   - [Sprite]: Image to be drawn for this tile
+
+- Tower:
+   - Type: Could be "drop", "antidef", "antivirus", "switch", "dump", "redirect"
+   - Range: Diameter of area at which this tower triggers (?)
+   - Targets: List of current targets
+   - [Sprite]: Image to be drawn for this tower
+   - [Position]: Position of this tower
+
+- Idle manager (Singleton)
+   - Bits: Number of bits that the player currently has
+   - Multiplier: Rate of bits earned
+   - [Timer]: Time before next tick
+   - [Timer frequency]: Rate at which ticks happen (?)
+   - {Tick}: Perform idle routine
+
+- Audio manager (Singleton)
+   - (?)
+
+- Input manager (Singleton)
+   - {Click}: Capture click and process it
+
+- Topology manager (Singleton)
+   - Current security layer: Current security layer (list of levels that the player can access)
+   - {Upgrade security layer level}: Increase security layer (unlock next set of levels)
+   - {Draw}: Draw the current topology
+
+- Shop manager (Singleton)
+   - Unlocked upgrades: List of upgrades that the player can buy
+   - Locked upgrades: List of upgrades that the player can't buy yet
+   - {Unlock upgrade}: Unlock an upgrade for the player to be able to buy
+   - {Buy upgrade}: Perform a transaction between the player and the shop using bits currency
+
+- Upgrade
+   - Name: Name of the upgrade
+   - Price: Price in bits of the upgrade
+
+- UI manager (Singleton)
+   - Current UI elements: List of UI elements currently in use
+   - Text font: The font to use for rendering text
+   - Text size: The font size to use for rendering text
+   - {Add UI element}: Create and add a UI element
+   - {Remove UI element}: Remove a UI element
+
+- Textbox
+   - Name: The name of this textbox (?: ID)
+   - Text: The text that this textbox contains
+   - Position: The position of this textbox
+   - [Width]: The calculated with of this textbox
+   - [Height]: The calculate height of this textbox
+   - {OK}: Click "OK" on this textbox
+
+- Container
+   - Name: The name of this container (?: ID)
+   - UI elements: The list of UI elements that this container contains
+   - Position: The position of this container
+   - [Width]: The calculated width of this container
+   - [Height]: The calculated height of this container
+
+- Prompt box (?)
+   - Name: The name of this box (?: ID)
+   - Text: The text asking the question in this box
+   - Position: The position of this box
+   - [Width]: The calculated width of this box
+   - [Height]: The calculated height of this box
+   - {Yes}: Click "Yes" on this box
+   - {No}: Click "No" on this box
+
+- Button
+   - Name: The name of this button (?: ID)
+   - Appearance type: Could be "text", "image"
+   - Appearance: If appearance type is text, the text on this button; if appareance type is image, the image that this button displays
+   - Position: The position of this button
+   - Width: The width of this button
+   - Height: The height of this button
+   - {Click}: Click on this button
